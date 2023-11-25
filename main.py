@@ -120,6 +120,7 @@
 
 from tkinter import Tk,Label,Frame
 from datetime import datetime,timedelta
+import json
 def quarterHour(current_time):
         quarters = [15,30,45,60]
         for quarter in quarters:
@@ -128,10 +129,40 @@ def quarterHour(current_time):
                 return str(endTime-current_time).split('.')[0][2:]
 root= Tk()
 today = datetime.today()
+month= today.month-1
+day = today.day-1
 
 bgColour = 'black'
 fgColour = 'white'
 dateFontSize = 65
+prayerFontSize = 20
+
+prayerData = json.load(open('2023.json', 'r'))
+
+prayerLabelsPaddingX = 36
+otherPrayerLabelsPaddingX = 0
+f = Frame(root,background=bgColour)
+f.pack(side='top',fill='x')
+
+transposed_prayers = [
+    ["", "Fajr", "Zuhr", "Asr", "Maghrib", "Isha"],
+    ["Start", prayerData[month][day]['Fajr_start'], prayerData[month][day]['Zuhr_start'], prayerData[month][day]['Asr_start2'], prayerData[month][day]['Maghrib_start'], prayerData[month][day]['Isha_start']],
+    ["Jama'ah", prayerData[month][day]['Fajr_jamaah'], prayerData[month][day]['Zuhr_jamaah'], prayerData[month][day]['Asr_jamaah'], prayerData[month][day]['Maghrib_jamaah'], prayerData[month][day]['Isha_jamaah']]
+]
+height = len(transposed_prayers)
+width = len(transposed_prayers[0])
+
+for i in range(height):
+    for j in range(width):
+        if i > 0  and j != 0:
+            Label(f, text=transposed_prayers[i][j], background=bgColour,font=("Arial", prayerFontSize), foreground=fgColour).grid(row=i, column=j, ipadx=prayerLabelsPaddingX, sticky="nsew")
+        else:
+            Label(f, text=transposed_prayers[i][j], background=bgColour,font=("Arial", prayerFontSize), foreground=fgColour).grid(row=i, column=j, ipadx=otherPrayerLabelsPaddingX, sticky="nsew")
+# Configure row and column weights to make the grid expand
+for i in range(height):
+    f.grid_rowconfigure(i, weight=1)
+for j in range(width):
+    f.grid_columnconfigure(j, weight=1)
 
 date_label = Label(root, text=today.strftime('%A, %d %B %Y'), font=("Arial", dateFontSize), background=bgColour,
                    foreground=fgColour)
@@ -139,8 +170,6 @@ date_label.pack(side="bottom", fill='x')
 clockFontSize = 150
 clock = Label(root,text=today.strftime('%I:%M:%S %p'),font=("Arial",clockFontSize),background=bgColour,foreground=fgColour)
 clock.pack(side='bottom',fill='x')
-
-
 timer = Label(root,text= quarterHour(datetime.now()),font=("Arial",clockFontSize+20),background=bgColour,foreground=fgColour)
 timer.pack(side='top',expand=1,fill='both')
 def repeater():
