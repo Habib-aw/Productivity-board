@@ -172,6 +172,15 @@ clock = Label(root,text=today.strftime('%I:%M:%S %p'),font=("Arial",clockFontSiz
 clock.pack(side='bottom',fill='x')
 timer = Label(root,text= quarterHour(datetime.now()),font=("Arial",clockFontSize+20),background=bgColour,foreground=fgColour)
 timer.pack(side='top',expand=1,fill='both')
+# Initial date
+current_date = today.date()
+
+def update_date():
+    global current_date
+    if current_date != datetime.today().date():
+        current_date = datetime.today().date()
+        date_label.config(text=current_date.strftime('%A, %d %B %Y'))
+    root.after(60000, update_date)  # Check every minute
 def repeater():
     timeObject = datetime.now()
     time = timeObject.strftime('%I:%M:%S %p')
@@ -179,5 +188,6 @@ def repeater():
     timer.config(text=quarterHour(timeObject))
     root.after(200,repeater)
 repeater()
+update_date()
 root.attributes('-fullscreen',True)
 root.mainloop() 
